@@ -32,7 +32,7 @@
 	if(!is_dir($dir))
 	{
 		$error = "Hey Its Free So Why not Sign Up Today?";	
-		header("Location: http://localhost/parallels/view/register.php?error=$error");
+		header("Location: ../view/register.php?error=$error");
 	}
 	
 	if(is_dir($dir))
