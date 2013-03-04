@@ -1,6 +1,6 @@
 <?php 
 
-	
+
 	$user = $_REQUEST['username'];
 	$pass = $_REQUEST['password'];
 	$hash = md5($pass);
@@ -20,7 +20,7 @@
 		{
 			return $this->userName;
 		}
-		
+
 		public function getHash()
 		{
 			return $this->pass;
@@ -34,7 +34,7 @@
 		$error = "Hey Its Free So Why not Sign Up Today?";	
 		header("Location: ../view/register.php?error=$error");
 	}
-	
+
 	if(is_dir($dir))
 	{
 		$fileName = $dir."/".$user.".twitt";
@@ -43,40 +43,40 @@
 			$handel = fopen($fileName, 'r');
 			$user  = file_get_contents($fileName,true);
 			$data = unserialize($user);
-			
+
 			//var_dump($data);
 			//print $data->getHash();
-			if($hash == $data->getHash())
+			if($hash == $data->pass)
 			{	
 				session_start();
-				
+
 				//print "\n\n".$data->getName();
-				
-				$_SESSION['user'] = $data->getName();
-			
+
+				$_SESSION['user'] = $data->userName;
+
 				header("Location: ../view/welcome.php");
 			}
-			
+
 			else
 			{
 				header("Location: ../view/login.php");
 			}
-		
+
 		}
-		
+
 		else
 		{
-			
+
 			header("Location: ../view/login.php");
 		}
 	}
-		
+
 	//De serialize the object
-	
+
 	//check the if the the hash matches
-	
+
 	// if the has matches start session
-	
+
 	// redirect to welcome view
-	
+
 ?>

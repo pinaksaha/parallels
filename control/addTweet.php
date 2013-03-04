@@ -1,6 +1,7 @@
-<?php 
-   //	print $user ."=>".$follower;
-   	class tweets
+<?php	
+
+	   //	print $user ."=>".$follower;
+   class tweets
 	{
 		public $user;
 		public $tweet;
@@ -68,51 +69,45 @@
 		}
 	}
 		
+					
+	$user = $_REQUEST['user'];
+	$tweet = $_REQUEST['tweet'];
 	
 	
-		$user = $_REQUEST['username'];
-		$pass = $_REQUEST['password'];
-		
-		$hash = md5($pass);
-		// Check if the use exists
-		
-		//echo $user . " ". $hash."\n";
-		
-		$dir = "../user/".$user;
-		//echo $dir;
-		
-		$fileName = $dir."/".$user.".twitt";
-		if(!is_dir($dir))
-		{
-			
-			//make the user
-			mkdir($dir,0777,TRUE);
-		
-			//make the user
-			//echo "\n\n".$user . " ". $hash."\n";
-			$newUsr = new tweetUser($user,$hash);
-			 
-			//format in json
-			$fileFormat = $newUsr;
-			$fileFormat = serialize($fileFormat);
-			//Save the data
-			$handel = fopen($fileName, 'x+');
-			fwrite($handel, $fileFormat);
-			fclose($handel);
-			session_start();
-			$_SESSION['user'] = $newUsr->getName();
-			header("Location: 	../view/welcome.php");
-			
-			
-		}
-		
-		else
-		{
-			$error = "Use Already Exists.";
-			
-			header("Location: ../view/register.php?error=$error");
-			
-		}	
-		
+	$filename = "../user/".$user."/".$user.".twitt";
+	$handel  = fopen($filename, "r");
+	//	print(filesize($filename));print "<br />";
+	$fileContent = fread($handel, 330000);
+	$fileContent = unserialize($fileContent);
+	
+	$tempName = $fileContent->userName;
+	$tempPass = $fileContent->pass;
+	$tempTweet = $fileContent->tweets; 
+	
+	$obj = new tweets($user,$tweet);
+	$tempTweet[] = $obj;
+	
+	$fileContent = new tweetUser($tempName,$tempPass,$tempTweet);
+	
+	$fileContent = serialize($fileContent);
+	fclose($handel);
+	$handel  = fopen($filename, "w");
+	
+		/*
+		print "<pre>";
+		print_r($fileContent);
+		print "</pre>";
+		*/
+	
+	fwrite($handel, $fileContent);
+	fclose($handel);
+	
+	/*
+		print "<pre>";
+		print_r($fileContent);
+		print "</pre>";
+	*/
+	
+	header("Location: ../view/welcome.php");
+	
 ?>
-	

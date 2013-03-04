@@ -6,7 +6,9 @@
 <body>
 <?php session_destroy(); ?>
 		<div id="top-navbar">
+			<h1><a href="../index.php">Home</a></h1>
 			<h1> Login</h1>
+			
       			<form name="login" action="../control/auth.php" method="post">
 					<fieldset >
 					<legend>Login</legend>
