@@ -1,15 +1,9 @@
 <!doctype html>
-<?php 
-	if(session_status()!=0);
-	{	
-		session_start();
-	}
-		$user=$_SESSION['user'];
-?>
+
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Welcome <?php print  $user;?></title>
+<title>Welcome</title>
 <style type="text/css">
 div.inline { float:left; padding: 2em; max-height: 800px;}
 .clearBoth { clear:both; }
@@ -19,7 +13,8 @@ div.inline { float:left; padding: 2em; max-height: 800px;}
 <body>
 
 <?php 
-
+	session_start();
+	$user=$_SESSION['user'];
    //	print $user ."=>".$follower;
    class tweets
 	{
