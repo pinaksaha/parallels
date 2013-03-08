@@ -82,12 +82,16 @@
 	
 	$tempName = $fileContent->userName;
 	$tempPass = $fileContent->pass;
-	$tempTweet = $fileContent->tweets; 
+	$tempTweet = $fileContent->tweets;
+	$tempfollowers = $fileContent->followers;
+	$tempfollowing = $fileContent->following;
 	
 	$obj = new tweets($user,$tweet);
 	$tempTweet[] = $obj;
 	
 	$fileContent = new tweetUser($tempName,$tempPass,$tempTweet);
+	$fileContent->followers = $tempfollowers;
+	$fileContent->following =$tempfollowing;
 	
 	$fileContent = serialize($fileContent);
 	fclose($handel);

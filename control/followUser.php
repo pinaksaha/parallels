@@ -70,7 +70,7 @@
 		}
 	}
 		
-		
+	///////////////////////////////////////////////////////////////////////////	
 	
 	$user = $_REQUEST['user'];
 	$follower = $_REQUEST['followUser'];
@@ -86,8 +86,13 @@
 	$tempPass = $fileContent->pass;
 	$tempTweet = $fileContent->tweets; 
 	$tempFollowing = $fileContent->following;
+	$tempFollowers = $fileContent->followers;
+
+	//new user object
 	$fileContent = new tweetUser($tempName,$tempPass,$tempTweet);
-	$fileContent->followers[] = $follower;
+	$fileContent->following = $tempFollowing;
+	$fileContent->addFollowing($follower);
+	$fileContent->follower = $tempFollowers;
 	//print_r($fileContent);
 	//array_push($fileContent->following,$follower);
 	$fileContent = serialize($fileContent);
@@ -107,14 +112,23 @@
 	$tempName = $fileContent->userName;
 	$tempPass = $fileContent->pass;
 	$tempTweet = $fileContent->tweets; 
-	$tempFollower = $fileContent->followers;
+	$tempFollowers = $fileContent->followers;
+	$temmFollowing = $fileContent->following;
+
 	$fileContent = new tweetUser($tempName,$tempPass,$tempTweet);
-	
+	$fileContent->followers = $tempFollowers;
+	$fileContent->addFollwer($user);
+
+
+	$fileContent->following = $temmFollowing;
+
+	//$fileContent->addFollowing($follower);
 	//array_push($fileContent->followers,$user);
-	$fileContent->following[] = $user;
+	
 	//print_r($fileContent);
 	$fileContent = serialize($fileContent);
 	fclose($handel);
+
 	$handel  = fopen($filename, "w");	
 	fwrite($handel, $fileContent);
 	fclose($handel);

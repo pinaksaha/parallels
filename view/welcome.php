@@ -124,7 +124,7 @@ div.inline { float:left; padding: 2em; max-height: 800px;}
 			print "<div class='inline' width='270px'>";	
 			print "<h1> People I follow  </h1>";
 				print "<pre>";
-				print_r($fileContent->followers);
+				print_r($fileContent->following);
 				print "</pre>";
 			print "</div>";
 			
@@ -155,26 +155,31 @@ div.inline { float:left; padding: 2em; max-height: 800px;}
 				print "</ul>";
 			}
 			
-	/*		
+		
 			print "</div>";
 			
 			print "<div  class='inline' width='270px'>";	
 			print "<h1> Stream  </h1>";
-			print "<ul>";
-			for($i= 0 ; $i < count($fileContent->followers);$i++)
-			{
-				
-				$follower_filename = "../user/".$fileContent->followers[$i]."/".$fileContent->$fileContent->followers[$i].".twitt";
-				$handel  = fopen($follower_filename, "r");
-				$follower_fileContent = fread($handel, 330000);
-				$follower_fileContent = unserialize($fileContent);
-				
-				print "<li>".$fileContent->followers[$i]."=>".$follower_fileContent->tweets[count($follower_fileContent->tweets)-1]."</li>";
-				fclose($handel);
-			}
-			print "</ul>";
+				//print_r($fileContent->followers);
+				print "<ul>";
+				for($i=0;$i<count($fileContent->following);$i++)
+				{
+					$folowing_dir = "../user/".$fileContent->following[$i]."/".$fileContent->following[$i].".twitt";
+					$handel  = fopen($folowing_dir, "r");
+					$following_fileContent = fread($handel, 330000);
+					$feed = unserialize($following_fileContent);
+					$tempName = $feed->userName;
+					$tempTweet = $feed->tweets;
+					print "<li>".$tempName."=>";
+					print $tempTweet[count($tempTweet)-1]->tweet;
+					print "</li>";
+
+					fclose($handel);
+				}
+				print "</ul>";
 			print "</div>";
-		*/	
+
+
 	}
 	
 
