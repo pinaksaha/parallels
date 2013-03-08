@@ -123,9 +123,18 @@ div.inline { float:left; padding: 2em; max-height: 800px;}
 			
 			print "<div class='inline' width='270px'>";	
 			print "<h1> People I follow  </h1>";
-				print "<pre>";
-				print_r($fileContent->following);
-				print "</pre>";
+				//print "<pre>";
+				//print_r($fileContent->following);
+				//print "</pre>";
+				for($i=0; $i<count($fileContent->following);$i++)
+				{
+					$removeUser = $fileContent->following[$i];
+					print "<form action='../control/removeUser.php' method='post'>";
+					print "<input type='hidden' name='user' value='$user'>";
+					print "<input type='hidden' name='removeUser' value='$removeUser'>";
+					print $removeUser."<input type='submit' name='Submit' value='remove' />";
+					print "</form>";
+				}
 			print "</div>";
 			
 			

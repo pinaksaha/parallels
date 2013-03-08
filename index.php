@@ -22,7 +22,7 @@
 </head>
 <body>
 		<div id="top-navbar">
-			<h1> Welcome Twitter 0.0.1 </h1>
+			<h1> Welcome Twitter 0.0.3 </h1>
       			<form name="login" action="./control/auth.php" method="post">
 				<fieldset >
 				<legend>Login</legend>
