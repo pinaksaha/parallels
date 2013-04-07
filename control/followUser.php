@@ -76,11 +76,25 @@
 	$follower = $_REQUEST['followUser'];
 	
 	
-	$filename = "../user/".$user."/".$user.".twitt";
-	$handel  = fopen($filename, "r");
-	//	print(filesize($filename));print "<br />";
-	$fileContent = fread($handel, 330000);
-	$fileContent = unserialize($fileContent);
+			$server = $server = "tcp://172.16.239.128:3000";
+			$param = "/GET/".$user."/";
+	
+			$fp = stream_socket_client($server,$errno,$errstr,10240);
+			$fileContent = "";
+	
+	
+			fwrite($fp, $param);
+			
+			while(!feof($fp))
+			{
+				$fileContent = $fileContent . fgets($fp,10240);
+			}
+			
+			fclose($fp);
+			
+			$fileContent = unserialize($fileContent);
+	
+	
 	
 	$tempName = $fileContent->userName;
 	$tempPass = $fileContent->pass;
@@ -96,17 +110,36 @@
 	//print_r($fileContent);
 	//array_push($fileContent->following,$follower);
 	$fileContent = serialize($fileContent);
-	fclose($handel);
-	$handel  = fopen($filename, "w");	
-	fwrite($handel, $fileContent);
-	fclose($handel);
+	
+	$server = "tcp://172.16.239.128:3000";
+	$param = "/PUT/".$user."/".$fileContent;
+	$fp = stream_socket_client($server,$errno,$errstr,10240);
+	fwrite($fp, $param);
+	
+	//fclose($handel);
+	//$handel  = fopen($filename, "w");	
+	//fwrite($handel, $fileContent);
+	//fclose($handel);
 
 ///////////////////////////////////////////////////////////////////////
 	
-	$filename = "../user/".$follower."/".$follower.".twitt";
-	$handel  = fopen($filename, "r");
-	//	print(filesize($filename));print "<br />";
-	$fileContent = fread($handel, 330000);
+	/*
+			$server = $server = "tcp://172.16.239.128:3000";
+			$param = "/GET/".$follower."/";
+	
+			$fp = stream_socket_client($server,$errno,$errstr,10240);
+			$fileContent = "";
+	
+	
+			fwrite($fp, $param);
+			
+			while(!feof($fp))
+			{
+				$fileContent = $fileContent . fgets($fp,10240);
+			}
+			
+			fclose($fp);
+			
 	$fileContent = unserialize($fileContent);
 	
 	$tempName = $fileContent->userName;
@@ -127,13 +160,12 @@
 	
 	//print_r($fileContent);
 	$fileContent = serialize($fileContent);
-	fclose($handel);
-
-	$handel  = fopen($filename, "w");	
-	fwrite($handel, $fileContent);
-	fclose($handel);
+	$server = "tcp://172.16.239.128:3000";
+	$param = "/PUT/".$user."/".$fileContent;
+	$fp = stream_socket_client($server,$errno,$errstr,10240);
+	fwrite($fp, $param);
 	
-	
+	*/
 	
 	header("Location: ../view/welcome.php");
 	

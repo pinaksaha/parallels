@@ -82,6 +82,7 @@ div.inline { float:left; padding: 2em; max-height: 800px;}
 			}
 			print "</ul>";
 		}
+		
 	}
 		
 			
@@ -111,22 +112,33 @@ div.inline { float:left; padding: 2em; max-height: 800px;}
 		
 			//open the file
 			
+			
+				$server = $server = "tcp://172.16.239.128:3000";
+				$param = "/GET/".$user."/";
+				
+				$fp = stream_socket_client($server,$errno,$errstr,10240);
+				$fileContent = "";
+				
+				fwrite($fp, $param);
+				
+				while(!feof($fp))
+				{
+					$fileContent = $fileContent . fgets($fp,10240);
+				}
+				
+				fclose($fp);
+				$fileContent = unserialize($fileContent);
+			//print "<pre>";print_r($fileContent);print "<pre>";
+			
 			print "<div  class='inline' width='270px'>";	
 			print "<h1> My Tweets </h1>";
-			$dir = "../user/".$user."/".$user.".twitt";
-			$handel  = fopen($dir, 'r');
-			$fileContent = fread($handel, filesize($dir));
-			$fileContent = unserialize($fileContent);
-			$fileContent->printTweets();
-			fclose($handel);
+	
+				$fileContent->printTweets();
 			print "</div>";
 			
 			print "<div class='inline' width='270px'>";	
 			print "<h1> People I follow  </h1>";
-				//print "<pre>";
-				//print_r($fileContent->following);
-				//print "</pre>";
-				for($i=0; $i<count($fileContent->following);$i++)
+			for($i=0; $i<count($fileContent->following);$i++)
 				{
 					$removeUser = $fileContent->following[$i];
 					print "<form action='../control/removeUser.php' method='post'>";
@@ -142,50 +154,84 @@ div.inline { float:left; padding: 2em; max-height: 800px;}
 			
 			print "<div  class='inline' width='270px'>";	
 			print "<h1> People I May Know  </h1>";
+						
+			//define the server 
+			$server = $server = "tcp://172.16.239.128:3000";
+			$param = "/VIEW/";
+			//connect using the socket
+			$fp = stream_socket_client($server,$errno,$errstr,10240);
 			
-			$userDir = "../user/";
-			$listUser = scandir($userDir, 1);
-			
-			for($i=0; $i < count($listUser)-4;$i++)
+			// call the method view
+			$usersInNetwork = "";
+			fwrite($fp, $param);
+			while(!feof($fp))
 			{
-				print "<ul>";
-				if($listUser[$i]!= $user)
+				$usersInNetwork = $usersInNetwork . fgets($fp,10240);
+			}
+			fclose($fp);
+			// tokenize the value delimination '/'
+			
+			$usersInNetwork = explode('/', $usersInNetwork);
+			
+			//print '<pre>'.print_r($usersInNetwork).print "</pres>";
+			
+			//display the usere
+			print "<ul>";
+			for($i=0; $i< count($usersInNetwork);$i++)
+			{
+			
+				if($usersInNetwork[$i] != $user)
 				{
-					if(!$fileContent->isFollowing($listUser[$i]))
+					if(!$fileContent->isFollowing($usersInNetwork[$i]))
 					{
-						$toFollow = $listUser[$i];
-						print "<form action='../control/followUser.php' method='post'>";
-						print "<input type='hidden' name='user' value='$user'>";
-						print "<input type='hidden' name='followUser' value='$toFollow'>";
-						print $listUser[$i]."<input type='submit' name='Submit' value='follow' />";
-						print "</form>";
+						
+							$toFollow = $usersInNetwork[$i];
+							print "<li>";					
+							print "<form action='../control/followUser.php' method='post'>";
+		                    print "<input type='hidden' name='user' value='$user'>";
+		                    print "<input type='hidden' name='followUser' value='$toFollow'>";
+		                    print $usersInNetwork[$i]."<input type='submit' name='Submit' value='follow' />";
+		                    print "</form>";
+		                    print "<li>";
+		                
 					}
 				}
-				print "</ul>";
 			}
-			
-		
+			print "</ul>";
 			print "</div>";
+			
+			
+			/*
+				Get Every Users Tweet that i follow
+			*/
 			
 			print "<div  class='inline' width='270px'>";	
 			print "<h1> Stream  </h1>";
-				//print_r($fileContent->followers);
-				print "<ul>";
-				for($i=0;$i<count($fileContent->following);$i++)
+			
+				for($i=0;$i<(count(($fileContent->following)));$i++)
 				{
-					$folowing_dir = "../user/".$fileContent->following[$i]."/".$fileContent->following[$i].".twitt";
-					$handel  = fopen($folowing_dir, "r");
-					$following_fileContent = fread($handel, 330000);
-					$feed = unserialize($following_fileContent);
-					$tempName = $feed->userName;
-					$tempTweet = $feed->tweets;
-					print "<li>".$tempName."=>";
-					print $tempTweet[count($tempTweet)-1]->tweet;
-					print "</li>";
-
-					fclose($handel);
+					$server = "tcp://172.16.239.128:3000";
+					$param = "/GET/".$fileContent->following[$i]."/";
+			
+					$fp = stream_socket_client($server,$errno,$errstr,10240);
+					$temp_fileContent = "";
+			
+			
+					fwrite($fp, $param);
+					
+					while(!feof($fp))
+					{
+						$temp_fileContent = $temp_fileContent . fgets($fp,10240);
+					}
+					
+					fclose($fp);
+					$temp_fileContent = unserialize($temp_fileContent);
+					$temp_tweets = $temp_fileContent->tweets;
+					print "<li>".$temp_fileContent->name."=>".$temp_fileContent->tweets[(count($temp_tweets)-1)]->tweet."</li>";
+					
+					
 				}
-				print "</ul>";
+			
 			print "</div>";
 
 

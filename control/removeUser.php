@@ -72,9 +72,21 @@
 	$user = $_REQUEST['user'];
 	$remove = $_REQUEST['removeUser'];
 
-	$filename = "../user/".$user."/".$user.".twitt";
-	$handel  = fopen($filename, "r");
-	$fileContent = fread($handel, 330000);
+	$server = $server = "tcp://172.16.239.128:3000";
+	$param = "/GET/".$user;
+	
+	$fp = stream_socket_client($server,$errno,$errstr,10240);
+	$fileContent = "";
+	fwrite($fp, $param);
+			
+			while(!feof($fp))
+			{
+				$fileContent = $fileContent . fgets($fp,10240);
+			}
+			
+	fclose($fp);
+	//////////////////////////////////////
+	
 	$fileContent = unserialize($fileContent);
 	$tempName = $fileContent->userName;
 	$tempPass = $fileContent->pass;
@@ -99,10 +111,16 @@
 	$fileContent->following = $followerList;
 
 	$fileContent = serialize($fileContent);
-	fclose($handel);
-	$handel  = fopen($filename, "w");	
-	fwrite($handel, $fileContent);
-	fclose($handel);
+	
+	//////////////////////////////////////
+	
+	$server = $server = "tcp://172.16.239.128:3000";
+	$param = "/PUT/".$user."/".$fileContent;
+	$fp = stream_socket_client($server,$errno,$errstr,10240);
+	fwrite($fp, $param);
+
+			
+	fclose($fp);
 
 	header("Location: ../view/welcome.php");
 

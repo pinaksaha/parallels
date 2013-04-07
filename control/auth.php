@@ -28,48 +28,50 @@
 	}
 
 	// open the user file
-	$dir = "../user/".$user;
-	if(!is_dir($dir))
+		$userContent = "";
+
+	$server = "tcp://172.16.239.128:3000";
+	$param = "/GET/".$user."/".$hash;
+
+	$fp = stream_socket_client($server, $errno, $errstr, 10240);
+
+	fwrite($fp, $param);
+
+	while(!feof($fp))
 	{
-		$error = "Hey Its Free So Why not Sign Up Today?";	
-		header("Location: ../view/register.php?error=$error");
+		$userContent = $userContent . fgets($fp, 10240);
 	}
+	fclose($fp);
 
-	if(is_dir($dir))
+
+	
+	$userContent = unserialize($userContent);
+
+	$userContent = json_encode($userContent);
+	$userContent = json_decode($userContent,true);
+
+	//print"<pre>";
+	//print_r($userContent);
+	//print "</pre>";
+
+	if($user == $userContent[userName])
 	{
-		$fileName = $dir."/".$user.".twitt";
-		if(is_file($fileName))
+		if($hash == $userContent[pass])
 		{
-			$handel = fopen($fileName, 'r');
-			$user  = file_get_contents($fileName,true);
-			$data = unserialize($user);
-
-			//var_dump($data);
-			//print $data->getHash();
-			if($hash == $data->pass)
-			{	
-				session_start();
-
-				//print "\n\n".$data->getName();
-
-				$_SESSION['user'] = $data->userName;
-
-				header("Location: ../view/welcome.php");
-			}
-
-			else
-			{
-				header("Location: ../view/login.php");
-			}
-
+			session_start();
+			$_SESSION['user'] = $userContent[userName];
+			header("Location: ../view/welcome.php");
 		}
-
 		else
 		{
-
 			header("Location: ../view/login.php");
 		}
 	}
+	else
+	{
+		header("Location: ../view/login.php");
+	}
+
 
 	//De serialize the object
 

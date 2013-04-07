@@ -72,13 +72,25 @@
 					
 	$user = $_REQUEST['user'];
 	$tweet = $_REQUEST['tweet'];
+		
 	
+	$server = $server = "tcp://172.16.239.128:3000";
+	$param = "/GET/".$user."/";
 	
-	$filename = "../user/".$user."/".$user.".twitt";
-	$handel  = fopen($filename, "r");
-	//	print(filesize($filename));print "<br />";
-	$fileContent = fread($handel, 330000);
+	$fp = stream_socket_client($server,$errno,$errstr,10240);
+	$fileContent = "";
+	
+	fwrite($fp, $param);
+	
+	while(!feof($fp))
+	{
+		$fileContent = $fileContent . fgets($fp,10240);
+	}
+	
+	fclose($fp);
+	
 	$fileContent = unserialize($fileContent);
+	
 	
 	$tempName = $fileContent->userName;
 	$tempPass = $fileContent->pass;
@@ -94,24 +106,15 @@
 	$fileContent->following =$tempfollowing;
 	
 	$fileContent = serialize($fileContent);
-	fclose($handel);
-	$handel  = fopen($filename, "w");
 	
-		/*
-		print "<pre>";
-		print_r($fileContent);
-		print "</pre>";
-		*/
+	$server = $server = "tcp://172.16.239.128:3000";
+	$param = "/PUT/".$user."/".$fileContent;
 	
-	fwrite($handel, $fileContent);
-	fclose($handel);
+	$fp = stream_socket_client($server,$errno,$errstr,10240);
 	
-	/*
-		print "<pre>";
-		print_r($fileContent);
-		print "</pre>";
-	*/
 	
+	fwrite($fp, $param);
+		
 	header("Location: ../view/welcome.php");
 	
 ?>
