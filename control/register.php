@@ -22,11 +22,11 @@
 		public $tweets; //array containing tweets
 		public $followers = array();
 		public $following = array();
-		public function __construct($userName,$pass,$tweets)
+		public function __construct($userName,$pass)
 		{
 			$this->userName = $userName;
 			$this->pass = $pass;
-			$this->tweets = $tweets;
+			
 			
 		}
 			public function getName()
@@ -74,45 +74,22 @@
 		$pass = $_REQUEST['password'];
 		
 		$hash = md5($pass);
+
+		$mk_usr = new tweetUser($user,$hash);
+		$mk_usr = serialize($mk_usr);
 		// Check if the use exists
 		
 		//echo $user . " ". $hash."\n";
 		
-		$dir = "../user/".$user;
+		//$dir = "../user/".$user;
 		//echo $dir;
+		$server = "tcp://172.16.239.128:3000";
+		$param = "/CREATE/".$user."/".$mk_usr."/";
 		
-		$fileName = $dir."/".$user.".twitt";
-		if(!is_dir($dir))
-		{
-			
-			//make the user
-			mkdir($dir,0777,TRUE);
-		
-			//make the user
-			//echo "\n\n".$user . " ". $hash."\n";
-			$newUsr = new tweetUser($user,$hash);
-			 
-			//format in json
-			$fileFormat = $newUsr;
-			$fileFormat = serialize($fileFormat);
-			//Save the data
-			$handel = fopen($fileName, 'x+');
-			fwrite($handel, $fileFormat);
-			fclose($handel);
-			session_start();
-			$_SESSION['user'] = $newUsr->getName();
-			header("Location: 	../view/welcome.php");
-			
-			
-		}
-		
-		else
-		{
-			$error = "Use Already Exists.";
-			
-			header("Location: ../view/register.php?error=$error");
-			
-		}	
-		
+		$fp = stream_socket_client($server, $errno, $errstr, 10240);
+			$userContent ="";
+			fwrite($fp, $param);
+
+		header("Location: ../index.php");
 ?>
 	
