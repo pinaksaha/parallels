@@ -8,42 +8,43 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
-
-#include <dirent.h>
-#include <sys/stat.h>
+#include <sys/file.h>
+#include <dirent.h> 
+#include <sys/stat.h>  
 #include <string.h>
+#include <pthread.h>
 
 
-void listDir(char* dirname,int connectionFD)
+void listDir(char* dirname,int connectionFD) 
 {
-    DIR *dirp;
-    struct dirent *direntp;
-    struct stat statbuff;
-    char * dirStorage = calloc(1024,sizeof(char));
-    
-    dirp = opendir(dirname);
+  DIR *dirp;
+  struct dirent *direntp;
+  struct stat statbuff;
+  char * dirStorage = calloc(1024,sizeof(char));
+
+  dirp = opendir(dirname);
 	
-    while ( (direntp = readdir(dirp)) != NULL )
-    {
-        
-        printf( "%s\n", direntp->d_name );
-        strcat(dirStorage,direntp->d_name);
-        strcat(dirStorage,"/");
-        char pathname[1024];
-        strcpy(pathname, dirname);
-        strcat(pathname, "/");
-        strcat(pathname, direntp->d_name);
-        if (lstat(pathname, &statbuff) == -1)
-        {
-            perror("Failed to lstat");
+	  while ( (direntp = readdir(dirp)) != NULL ) 
+	  {
 		    
-        }
-    }
-    
-    printf("%s\n",dirStorage);
-    write(connectionFD,dirStorage,strlen(dirStorage));
-    free(dirStorage);
-    closedir(dirp);
+		    printf( "%s\n", direntp->d_name );
+		    strcat(dirStorage,direntp->d_name);
+		    strcat(dirStorage,"/");
+		    char pathname[1024];
+		    strcpy(pathname, dirname);
+		    strcat(pathname, "/");
+		    strcat(pathname, direntp->d_name);
+		    if (lstat(pathname, &statbuff) == -1) 
+		    {
+		      perror("Failed to lstat");
+		    
+		    }
+	  }
+
+	  printf("%s\n",dirStorage);
+	  write(connectionFD,dirStorage,strlen(dirStorage));
+	  free(dirStorage);
+	  closedir(dirp);
 }
 
 void GET(char* user,int connectionFD)
@@ -64,6 +65,8 @@ void GET(char* user,int connectionFD)
 	//check if file exists in dir
 	
 	FILE * file = fopen(fileName,"r");
+	flock(fileno(file),LOCK_SH);
+	
 	fseek(file,0,SEEK_END);
 	int fileSize = ftell(file);
 	
@@ -74,8 +77,10 @@ void GET(char* user,int connectionFD)
 	fread(content, fileSize,1, file);
 	printf("USER FILE Content=>%s\n",content);
 	write(connectionFD,content,strlen(content));
+	flock(fileno(file),LOCK_SH);
+	
 	fclose(file);
-    
+		
 }
 
 void CREATE(char* user,int connectionFD,char * content)
@@ -96,7 +101,11 @@ void CREATE(char* user,int connectionFD,char * content)
 		
 		FILE * file;
 		file = fopen(fileName,"w");
+		flock(fileno(file),LOCK_EX);
+		
 		fprintf(file,"%s",content);
+		
+		flock(fileno(file),LOCK_UN);
 		fclose(file);
 		
 		//free(fileName);
@@ -118,21 +127,25 @@ void PUT(char* user,int connectionFD,char * content)
 	//check if file exists in dir
 	
 	FILE * file;
+	
+	flock(fileno(file),LOCK_EX);
+	
 	file = fopen(fileName,"w");
 	fprintf(file,"%s",content);
+	
+	flock(fileno(file),LOCK_UN);
 	fclose(file);
 	
 	//free(fileName);
 }
 
 
-
 void processBuffer(char* buffer, int connectionFD)
 {
     
 	
-	//Command: GET POST PUT VIEW CREATE
-    // char * api_get = "GET";
+	//Command: GET POST PUT VIEW CREATE 
+   // char * api_get = "GET";
     
     
     char * method;
@@ -163,7 +176,7 @@ void processBuffer(char* buffer, int connectionFD)
     if(strcmp(method,"VIEW")==0)
     {
     	char * userDir = "user/";
-    	listDir(userDir,connectionFD);
+    	listDir(userDir,connectionFD); 
     	
     }
     if(strcmp(method,"PUT")==0)
@@ -202,6 +215,31 @@ void processBuffer(char* buffer, int connectionFD)
     
 }
 
+void* createThread(void* args)
+{
+	
+	int connectionFD= (int) args;
+	char* buffer= malloc(40240);
+	bzero(buffer,40240);
+	
+	printf("made it in Create Thread\n");
+	
+	read(connectionFD,buffer,40240);
+	
+	printf("read completed\n");
+	
+	printf("message recieved: %s\n",buffer);
+	
+	printf("Processing the buffer\n");
+	
+	processBuffer(buffer,connectionFD);
+    
+    printf("it worked\n");
+    close(connectionFD);
+    pthread_exit(0);
+}
+
+
 int main(int argc, char * argv[])
 {
 	int listenFD =0;
@@ -222,24 +260,32 @@ int main(int argc, char * argv[])
     
     bind(listenFD, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
     listen(listenFD,10);
-    
+   
     puts("Starting Server");
+    pthread_t pid;
     
     while(1)
     {
         
-    	bzero(buffer,40240);
+    	//bzero(buffer,40240);
+    	printf("Starting the Connection\n");
     	connectionFD = accept(listenFD,(struct sockaddr*)NULL, NULL);
-    	read(connectionFD,&buffer,40240);
     	
-        
-        
+    	 printf("Connection:%d\n",connectionFD);
+    	 
+    	 printf("making the thread\n");
+    	 pthread_create(&pid, NULL, createThread, (void*)connectionFD);
+    	 
+    	 //read(connectionFD,&buffer,40240);
         /* Write a response to the client */
-        processBuffer(buffer,connectionFD);
+        //processBuffer(buffer,connectionFD);
         // write(connectionFD,buffer,strlen(buffer));
         
     	//printf("%s\n",buffer);
-    	close(connectionFD);
+    	
+    	//close(connectionFD);
+    	
+    	
     	sleep(1);
     }
 }
