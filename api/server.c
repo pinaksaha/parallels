@@ -53,9 +53,9 @@ void GET(char* user,int connectionFD)
 	
 	//create the file dir
 	
-	char * fileName = calloc(strlen("./user/")+strlen(user)+strlen(user)+strlen("/.twitt"),sizeof(char));
+	char * fileName = calloc(strlen("../user/")+strlen(user)+strlen(user)+strlen("/.twitt"),sizeof(char));
 	
-	strcat(fileName,"./user/");
+	strcat(fileName,"../user/");
 	strcat(fileName,user);
 	strcat(fileName,"/");
 	strcat(fileName,user);
@@ -85,8 +85,8 @@ void GET(char* user,int connectionFD)
 
 void CREATE(char* user,int connectionFD,char * content)
 {
-	char * fileName = calloc(strlen("./user/")+strlen(user)+strlen(user)+strlen("/.twitt"),sizeof(char));
-	strcat(fileName,"./user/");
+	char * fileName = calloc(strlen("../user/")+strlen(user)+strlen(user)+strlen("/.twitt"),sizeof(char));
+	strcat(fileName,"../user/");
 	strcat(fileName,user);
 	
 	printf("Checking Dir:%s\n\n",fileName);
@@ -118,8 +118,8 @@ void CREATE(char* user,int connectionFD,char * content)
 }
 void PUT(char* user,int connectionFD,char * content)
 {
-	char * fileName = calloc(strlen("./user/")+strlen(user)+strlen(user)+strlen("/.twitt"),sizeof(char));
-	strcat(fileName,"./user/");strcat(fileName,user);strcat(fileName,"/");
+	char * fileName = calloc(strlen("../user/")+strlen(user)+strlen(user)+strlen("/.twitt"),sizeof(char));
+	strcat(fileName,"../user/");strcat(fileName,user);strcat(fileName,"/");
 	strcat(fileName,user);
 	strcat(fileName,".twitt");
 	printf("USER FILE NAME=>%s\n",fileName);
@@ -175,7 +175,7 @@ void processBuffer(char* buffer, int connectionFD)
     }
     if(strcmp(method,"VIEW")==0)
     {
-    	char * userDir = "user/";
+    	char * userDir = "../user/";
     	listDir(userDir,connectionFD); 
     	
     }

@@ -83,7 +83,7 @@
 		
 		//$dir = "../user/".$user;
 		//echo $dir;
-		$server = "tcp://172.16.239.128:3000";
+		$server = "tcp://128.238.64.5:3000";
 		$param = "/CREATE/".$user."/".$mk_usr."/";
 		
 		$fp = stream_socket_client($server, $errno, $errstr, 10240);

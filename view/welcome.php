@@ -113,7 +113,7 @@ div.inline { float:left; padding: 2em; max-height: 800px;}
 			//open the file
 			
 			
-				$server = $server = "tcp://172.16.239.128:3000";
+				$server = $server = "tcp://128.238.64.5:3000";
 				$param = "/GET/".$user."/";
 				
 				$fp = stream_socket_client($server,$errno,$errstr,10240);
@@ -156,7 +156,7 @@ div.inline { float:left; padding: 2em; max-height: 800px;}
 			print "<h1> People I May Know  </h1>";
 						
 			//define the server 
-			$server = $server = "tcp://172.16.239.128:3000";
+			$server = $server = "tcp://128.238.64.5:3000";
 			$param = "/VIEW/";
 			//connect using the socket
 			$fp = stream_socket_client($server,$errno,$errstr,10240);
@@ -210,7 +210,7 @@ div.inline { float:left; padding: 2em; max-height: 800px;}
 			
 				for($i=0;$i<(count(($fileContent->following)));$i++)
 				{
-					$server = "tcp://172.16.239.128:3000";
+					$server = "tcp://128.238.64.5:3000";
 					$param = "/GET/".$fileContent->following[$i]."/";
 			
 					$fp = stream_socket_client($server,$errno,$errstr,10240);

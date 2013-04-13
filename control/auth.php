@@ -30,7 +30,7 @@
 	// open the user file
 		$userContent = "";
 
-	$server = "tcp://172.16.239.128:3000";
+	$server = "tcp://128.238.64.5:3000";
 	$param = "/GET/".$user."/".$hash;
 
 	$fp = stream_socket_client($server, $errno, $errstr, 10240);
