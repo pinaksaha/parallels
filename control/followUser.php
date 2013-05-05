@@ -76,7 +76,7 @@
 	$follower = $_REQUEST['followUser'];
 	
 	
-			$server = $server = "tcp://128.238.64.5:3000";
+			$server = "tcp://128.238.64.5:3000";
 			$param = "/GET/".$user."/";
 	
 			$fp = stream_socket_client($server,$errno,$errstr,10240);

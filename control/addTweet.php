@@ -74,7 +74,7 @@
 	$tweet = $_REQUEST['tweet'];
 		
 	
-	$server = $server = "tcp://128.238.64.5:3000";
+	$server = "tcp://128.238.64.5:3000";
 	$param = "/GET/".$user."/";
 	
 	$fp = stream_socket_client($server,$errno,$errstr,10240);
@@ -107,7 +107,7 @@
 	
 	$fileContent = serialize($fileContent);
 	
-	$server = $server = "tcp://128.238.64.5:3000";
+	$server = "tcp://128.238.64.5:3000";
 	$param = "/PUT/".$user."/".$fileContent;
 	
 	$fp = stream_socket_client($server,$errno,$errstr,10240);

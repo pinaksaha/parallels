@@ -72,7 +72,7 @@
 	$user = $_REQUEST['user'];
 	$remove = $_REQUEST['removeUser'];
 
-	$server = $server = "tcp://128.238.64.5:3000";
+	$server = "tcp://128.238.64.5:3000";
 	$param = "/GET/".$user;
 	
 	$fp = stream_socket_client($server,$errno,$errstr,10240);
@@ -114,7 +114,7 @@
 	
 	//////////////////////////////////////
 	
-	$server = $server = "tcp://128.238.64.5:3000";
+	$server = "tcp://128.238.64.5:3000";
 	$param = "/PUT/".$user."/".$fileContent;
 	$fp = stream_socket_client($server,$errno,$errstr,10240);
 	fwrite($fp, $param);
